@@ -259,7 +259,7 @@ namespace BorderlessGaming.Forms
 
         private void lstFavorites_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnRemoveFavorite.Enabled = lstFavorites.SelectedItem != null;
+            btnRemoveFavorite.Enabled =  btnMake169.Enabled = lstFavorites.SelectedItem != null;
         }
 
         private void setWindowTitleToolStripMenuItem_Click(object sender, EventArgs e)
@@ -297,6 +297,15 @@ namespace BorderlessGaming.Forms
 
             Config.Instance.ExcludeProcess(pd.BinaryName.Trim().ToLower());
             await RefreshProcesses();
+        }
+
+        private async void btnMake169_Click(object sender, EventArgs e)
+        {
+            if (lstFavorites.SelectedItem == null)
+            {
+                return;
+            }
+            setFavoriteWindowSize(sender, e, 440, 0, 2560, 1440);
         }
 
         /// <summary>
@@ -663,6 +672,31 @@ fav.PositionX.ToString()), out int favPositionX);
                 fav.PositionW = favPositionW;
                 fav.PositionY = favPositionY;
             }
+
+            Config.Instance.RemoveFavorite(fav, () =>
+            {
+                lstFavorites.Items.Remove(fav);
+            });
+
+            if (fav.PositionW == 0 || fav.PositionH == 0)
+            {
+                fav.Size = FavoriteSize.FullScreen;
+            }
+            else
+            {
+                fav.Size = FavoriteSize.SpecificSize;
+                fav.ShouldMaximize = false;
+            }
+            RefreshFavoritesList(fav);
+        }
+
+        private void setFavoriteWindowSize(object sender, EventArgs e, int x, int y, int w, int h)
+        {
+            var fav = (Favorite) lstFavorites.SelectedItem;
+            fav.PositionX = x;
+            fav.PositionY = y;
+            fav.PositionW = w;
+            fav.PositionH = h;
 
             Config.Instance.RemoveFavorite(fav, () =>
             {
@@ -1203,7 +1237,7 @@ fav.PositionX.ToString()), out int favPositionX);
 
         private void muteInBackgroundToolStripMenuItem_Click(object sender, EventArgs e)
         {
-      
+
             var fav = (Favorite)lstFavorites.SelectedItem;
             Config.Instance.RemoveFavorite(fav, () =>
             {
