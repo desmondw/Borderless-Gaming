@@ -305,7 +305,7 @@ namespace BorderlessGaming.Forms
             {
                 return;
             }
-            setFavoriteWindowSize(sender, e, 440, 0, 2560, 1440);
+            setFavoriteWindowSize(440, 0, 2560, 1440);
         }
 
         /// <summary>
@@ -690,7 +690,7 @@ fav.PositionX.ToString()), out int favPositionX);
             RefreshFavoritesList(fav);
         }
 
-        private void setFavoriteWindowSize(object sender, EventArgs e, int x, int y, int w, int h)
+        private void setFavoriteWindowSize(int x, int y, int w, int h)
         {
             var fav = (Favorite) lstFavorites.SelectedItem;
             fav.PositionX = x;
@@ -1196,7 +1196,17 @@ fav.PositionX.ToString()), out int favPositionX);
                         // Otherwise, this is a fresh request to remove the border from the current window
                         else
                         {
-                             _watcher.RemoveBorder(pd).GetAwaiter().GetResult();
+                            //  _watcher.RemoveBorder(pd).GetAwaiter().GetResult();
+
+                            // ACTUALLY add to favorites and then apply custom dimensions
+                            var fav = new Favorite
+                            {
+                                Type = FavoriteType.Title,
+                                SearchText = pd.WindowTitle
+                            };
+                            RefreshFavoritesList(fav);
+                            lstFavorites.SelectedItem = fav;
+                            setFavoriteWindowSize(440, 0, 2560, 1440);
                         }
                     }
 
